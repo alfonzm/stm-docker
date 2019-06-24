@@ -1,0 +1,41 @@
+version: '3.2'
+services:
+  stm_fe_1:
+    build: ./huber-stm-front
+    tty: true
+    restart: always
+    volumes:
+      - './huber-stm-front:/src/app'
+    links:
+      - redis:redis
+    environment:
+      - REDIS_HOST=redis://redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+  stm_fe_2:
+    build: ./huber-stm-front
+    tty: true
+    restart: always
+    volumes:
+      - './huber-stm-front:/src/app'
+    links:
+      - redis:redis
+    environment:
+      - REDIS_HOST=redis://redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+  redis:
+    image: redis
+  stm-lb:
+    build: ./load-balancer
+    tty: true
+    links:
+      - stm_fe_1
+      - stm_fe_2
+    ports:
+      - '8086:8080'
+
+volumes:
+  backend:
